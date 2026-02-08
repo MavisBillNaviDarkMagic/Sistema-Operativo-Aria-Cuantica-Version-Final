@@ -1,0 +1,117 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Aria | Quantum Singularity OS</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;400;600;800&family=JetBrains+Mono:wght@300;500;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --quantum-primary: #8b5cf6;
+      --quantum-secondary: #ec4899;
+      --quantum-accent: #06b6d4;
+      --quantum-bg: #020617;
+    }
+    * {
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+      outline: none !important;
+    }
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      overflow: hidden;
+      margin: 0;
+      background-color: var(--quantum-bg);
+      color: #f8fafc;
+      overscroll-behavior: none;
+      user-select: none;
+    }
+    .quantum-glass {
+      background: rgba(8, 10, 31, 0.4);
+      backdrop-filter: blur(40px) saturate(200%);
+      -webkit-backdrop-filter: blur(40px) saturate(200%);
+      border: 1px solid rgba(139, 92, 246, 0.2);
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
+    }
+    .aria-orb-core {
+      background: radial-gradient(circle at 30% 30%, var(--quantum-primary), var(--quantum-secondary), var(--quantum-accent));
+      background-size: 300% 300%;
+      animation: aria-pulse 6s infinite alternate cubic-bezier(0.45, 0, 0.55, 1);
+      box-shadow: 0 0 100px rgba(139, 92, 246, 0.4), inset 0 0 40px rgba(255, 255, 255, 0.2);
+    }
+    @keyframes aria-pulse {
+      0% { background-position: 0% 50%; transform: scale(1) rotate(0deg); filter: hue-rotate(0deg); }
+      100% { background-position: 100% 50%; transform: scale(1.1) rotate(5deg); filter: hue-rotate(30deg); }
+    }
+    .data-particle {
+      position: absolute;
+      background: white;
+      border-radius: 50%;
+      pointer-events: none;
+      animation: float-particle linear infinite;
+      opacity: 0.3;
+    }
+    @keyframes float-particle {
+      from { transform: translateY(100vh) scale(0); opacity: 0; }
+      to { transform: translateY(-10vh) scale(1); opacity: 0.5; }
+    }
+    .text-glitch {
+      text-shadow: 2px 0 var(--quantum-accent), -2px 0 var(--quantum-secondary);
+      animation: glitch 3s infinite linear alternate-reverse;
+    }
+    @keyframes glitch {
+      0% { text-shadow: 2px 0 var(--quantum-accent), -2px 0 var(--quantum-secondary); }
+      50% { text-shadow: -2px 0 var(--quantum-accent), 2px 0 var(--quantum-secondary); }
+      100% { text-shadow: 1px 0 var(--quantum-accent), -1px 0 var(--quantum-secondary); }
+    }
+    .quantum-border {
+      position: relative;
+    }
+    .quantum-border::after {
+      content: '';
+      position: absolute;
+      inset: -1px;
+      background: linear-gradient(90deg, var(--quantum-primary), var(--quantum-accent), var(--quantum-secondary));
+      z-index: -1;
+      border-radius: inherit;
+      opacity: 0.3;
+      filter: blur(5px);
+    }
+  </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@18.3.1",
+    "react-dom": "https://esm.sh/react-dom@18.3.1",
+    "react-dom/client": "https://esm.sh/react-dom@18.3.1/client",
+    "lucide-react": "https://esm.sh/lucide-react@0.428.0?external=react,react-dom",
+    "recharts": "https://esm.sh/recharts@2.12.7?external=react,react-dom",
+    "@google/genai": "https://esm.sh/@google/genai@1.3.0",
+    "react/": "https://esm.sh/react@18.3.1/",
+    "react-dom/": "https://esm.sh/react-dom@18.3.1/"
+  }
+}
+</script>
+</head>
+<body>
+  <div id="root"></div>
+  <script>
+    // Particle Generator for the background
+    function createParticle() {
+      const p = document.createElement('div');
+      p.className = 'data-particle';
+      const size = Math.random() * 3 + 1;
+      p.style.width = size + 'px';
+      p.style.height = size + 'px';
+      p.style.left = Math.random() * 100 + 'vw';
+      p.style.animationDuration = (Math.random() * 10 + 5) + 's';
+      p.style.background = Math.random() > 0.5 ? '#8b5cf6' : '#06b6d4';
+      document.body.appendChild(p);
+      setTimeout(() => p.remove(), 15000);
+    }
+    setInterval(createParticle, 200);
+  </script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+{
+  "name": "Aurora OS: Aria Core",
+  "description": "The definitive fusion of a futuristic OS and Aria Intelligence. Aria coordinates everything from kernel to user interface.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone",
+    "geolocation"
+  ]
+}
