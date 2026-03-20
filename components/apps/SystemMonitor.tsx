@@ -1,10 +1,27 @@
 
 import React, { useEffect, useState } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { Activity, Cpu, Database, Zap, Sparkles, Orbit } from 'lucide-react';
+import { Activity, Cpu, Database, Zap, Sparkles, Orbit, ShieldCheck } from 'lucide-react';
 
 const SystemMonitor: React.FC = () => {
   const [metrics, setMetrics] = useState<any[]>([]);
+  const [isSanitizing, setIsSanitizing] = useState(false);
+  const [sanitizeProgress, setSanitizeProgress] = useState(0);
+
+  const handleSanitize = () => {
+    setIsSanitizing(true);
+    setSanitizeProgress(0);
+    const interval = setInterval(() => {
+      setSanitizeProgress(prev => {
+        if (prev >= 100) {
+          clearInterval(interval);
+          setTimeout(() => setIsSanitizing(false), 1000);
+          return 100;
+        }
+        return prev + 2;
+      });
+    }, 50);
+  };
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -105,6 +122,40 @@ const SystemMonitor: React.FC = () => {
              <p className="text-lg font-black text-white">TRANSCENDENT</p>
            </div>
         </div>
+      </div>
+
+      <div className="liquid-glass p-8 rounded-[2.5rem] border-emerald-500/20 bg-emerald-500/5 flex flex-col gap-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <ShieldCheck size={28} className="text-emerald-400" />
+            <div>
+              <h3 className="font-black text-xl uppercase tracking-tighter text-white">Protocolo de Sanitización</h3>
+              <p className="text-[10px] text-emerald-400/60 font-bold uppercase tracking-widest">Limpieza Profunda de Rutas de Dispositivo</p>
+            </div>
+          </div>
+          <button 
+            onClick={handleSanitize}
+            disabled={isSanitizing}
+            className={`px-8 py-3 rounded-2xl font-black uppercase tracking-widest text-xs transition-all ${isSanitizing ? 'bg-emerald-500/20 text-emerald-400 cursor-not-allowed' : 'bg-emerald-500 text-white hover:bg-emerald-400 active:scale-95 shadow-[0_0_20px_rgba(16,185,129,0.4)]'}`}
+          >
+            {isSanitizing ? 'PROCESANDO...' : 'INICIAR LIMPIEZA'}
+          </button>
+        </div>
+        
+        {isSanitizing && (
+          <div className="space-y-3 animate-in fade-in slide-in-from-bottom-4">
+            <div className="flex justify-between text-[10px] font-black text-emerald-400 uppercase tracking-[0.2em]">
+              <span>Eliminando rastros de red...</span>
+              <span>{sanitizeProgress}%</span>
+            </div>
+            <div className="h-2 bg-white/5 rounded-full overflow-hidden">
+              <div 
+                className="h-full bg-emerald-500 transition-all duration-300"
+                style={{ width: `${sanitizeProgress}%` }}
+              />
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

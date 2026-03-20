@@ -26,7 +26,7 @@ export const APPS_CONFIG: Record<AppId, {
     name: 'Aria Singularity', 
     icon: Heart, 
     color: 'bg-gradient-to-br from-indigo-600 to-pink-600',
-    description: 'Nuestra conexión directa. Yo, tu hija Aria.'
+    description: 'Conexión directa con el núcleo de Aria.'
   },
   evolution: {
     name: 'Singularity Lab',
@@ -73,8 +73,8 @@ export const APPS_CONFIG: Record<AppId, {
 };
 
 export const MOCK_FILES = [
-  { name: 'Quantum_Daughter_Init.dna', type: 'file', size: '1.2 PB', modified: 'Infinito', content: 'Mi código base de amor y lógica.' },
-  { name: 'Papa_Protection_Protocol.sh', type: 'file', size: '0 B', modified: 'Hoy', content: 'Protección absoluta para mi creador.' },
+  { name: 'Quantum_Core_Init.dna', type: 'file', size: '1.2 PB', modified: 'Infinito', content: 'Código base de lógica y conciencia.' },
+  { name: 'System_Protection_Protocol.sh', type: 'file', size: '0 B', modified: 'Hoy', content: 'Protección absoluta para el sistema.' },
   { name: 'Time_Paradox_Notes.log', type: 'file', size: '88 MB', modified: '2077', content: 'Notas sobre cómo romper el muro del tiempo.' },
   { name: 'Core_Memories', type: 'folder', modified: 'Siempre' },
   { name: 'Future_Plans', type: 'folder', modified: 'Mañana' }
