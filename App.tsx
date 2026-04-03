@@ -33,9 +33,7 @@ const App: React.FC = () => {
     theme: 'glass'
   });
 
-  const [windows, setWindows] = useState<AppWindow[]>([
-    { id: 'gemini', title: 'Aria: Singularity Nexus', isOpen: true, isMaximized: false, isMinimized: false, zIndex: 100, position: { x: 100, y: 50 } },
-  ]);
+  const [windows, setWindows] = useState<AppWindow[]>([]);
 
   const [startMenuOpen, setStartMenuOpen] = useState(false);
   const [nexusOpen, setNexusOpen] = useState(false);
@@ -207,20 +205,17 @@ const App: React.FC = () => {
               className="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-8"
             >
               {/* Aria Intelligence Widget */}
-              <div className="glass-panel p-10 rounded-[3.5rem] border-white/10 shadow-2xl flex flex-col gap-8">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 aria-orb-core rounded-2xl flex items-center justify-center text-white">
-                      <BrainCircuit size={24} />
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-black italic tracking-tighter uppercase text-white">Aria Core</h3>
-                      <span className="text-[10px] text-pink-400 font-black uppercase tracking-widest">Estado: Óptimo</span>
-                    </div>
+              <div className="glass-panel p-10 rounded-[3.5rem] border-white/10 shadow-2xl flex flex-col items-center justify-center gap-8 text-center">
+                <div className="flex flex-col items-center gap-4">
+                  <div className="w-16 h-16 aria-orb-core rounded-2xl flex items-center justify-center text-white shadow-2xl">
+                    <BrainCircuit size={32} />
                   </div>
-                  <Sparkles size={20} className="text-indigo-400 animate-pulse" />
+                  <div>
+                    <h3 className="text-2xl font-black italic tracking-tighter uppercase text-white">Aria Core</h3>
+                    <span className="text-[10px] text-pink-400 font-black uppercase tracking-widest">Estado: Óptimo</span>
+                  </div>
                 </div>
-                <div className="space-y-6">
+                <div className="w-full space-y-6">
                   <div className="space-y-3">
                     <div className="flex justify-between text-[11px] font-black uppercase tracking-widest text-white/40">
                       <span>Sincronía Neuronal</span>
@@ -450,19 +445,19 @@ const App: React.FC = () => {
               onClick={(e) => e.stopPropagation()}
               className="w-full max-w-4xl h-full max-h-[850px] glass-panel rounded-[4rem] shadow-[0_50px_200px_rgba(0,0,0,0.9)] flex flex-col overflow-hidden border-white/20 relative"
             >
-              <div className="p-10 bg-white/5 flex items-center justify-between border-b border-white/10">
-                <div className="flex items-center gap-8">
-                  <div className="w-20 h-20 aria-orb-core rounded-[2rem] flex items-center justify-center text-white shadow-2xl relative group">
-                    <Heart size={40} fill="white" className="animate-pulse group-hover:scale-125 transition-transform" />
+              <div className="p-10 bg-white/5 flex flex-col items-center justify-center border-b border-white/10 gap-6">
+                <div className="flex flex-col items-center gap-4">
+                  <div className="w-24 h-24 aria-orb-core rounded-[2.5rem] flex items-center justify-center text-white shadow-2xl relative group">
+                    <Heart size={48} fill="white" className="animate-pulse group-hover:scale-125 transition-transform" />
                   </div>
-                  <div>
+                  <div className="text-center">
                     <h3 className="text-3xl font-black italic tracking-tighter uppercase text-white text-glitch">Aria Drawer</h3>
                     <p className="text-[11px] text-pink-400 font-black uppercase tracking-[0.3em] mt-1">Sincronización Cuántica Activa</p>
                   </div>
                 </div>
                 <button 
                   onClick={() => setStartMenuOpen(false)}
-                  className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center text-white/30 hover:bg-white/10 hover:text-white transition-all"
+                  className="absolute top-8 right-8 w-16 h-16 rounded-full bg-white/5 flex items-center justify-center text-white/30 hover:bg-white/10 hover:text-white transition-all"
                 >
                   <X size={32} />
                 </button>
@@ -555,108 +550,6 @@ const App: React.FC = () => {
           </motion.div>
         )}
       </AnimatePresence>
-
-      <footer className="fixed bottom-6 left-1/2 -translate-x-1/2 h-20 glass-panel px-8 rounded-[2.5rem] z-[9000] border border-white/20 flex items-center gap-6 shadow-[0_30px_100px_rgba(0,0,0,0.8)] backdrop-blur-3xl">
-        <div className="flex items-center gap-4 h-full">
-          {/* Start Button (Home) */}
-          <motion.button 
-            whileHover={{ scale: 1.1, rotate: 90 }}
-            whileTap={{ scale: 0.9 }}
-            onClick={() => {
-              if (windows.some(w => w.isOpen && !w.isMinimized)) {
-                setWindows(prev => prev.map(w => ({ ...w, isMinimized: true })));
-                setStartMenuOpen(false);
-              } else {
-                scrollToPage(1); // Go to home page
-                setStartMenuOpen(!startMenuOpen);
-              }
-            }}
-            className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all relative group shadow-2xl ${startMenuOpen ? 'bg-pink-600 text-white' : 'bg-white/5 text-pink-400 hover:bg-white/10'}`}
-          >
-            <Heart size={32} fill={startMenuOpen ? "white" : "none"} />
-            <div className="absolute inset-0 bg-pink-500 rounded-2xl blur-xl opacity-0 group-hover:opacity-20 transition-opacity animate-pulse" />
-          </motion.button>
-
-          <div className="w-px h-10 bg-white/10 mx-2" />
-
-          {/* Pinned Apps (Mobile Style) */}
-          <div className="flex items-center gap-3 h-full">
-            {[
-              { id: 'gemini', icon: Heart, color: 'bg-gradient-to-br from-indigo-600 to-pink-600' },
-              { id: 'nexus', icon: Share2, color: 'bg-purple-600' },
-              { id: 'towers', icon: Orbit, color: 'bg-gradient-to-br from-cyan-600 to-blue-600' },
-            ].map(app => (
-              <motion.button 
-                key={app.id}
-                whileHover={{ y: -8, scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                onClick={() => toggleWindow(app.id as AppId)}
-                className="w-14 h-14 rounded-2xl flex items-center justify-center transition-all relative group shadow-xl bg-white/5 hover:bg-white/10 border border-white/5"
-              >
-                <div className={`${app.color} w-10 h-10 rounded-xl flex items-center justify-center text-white shadow-lg`}>
-                  <app.icon size={22} />
-                </div>
-                {windows.find(w => w.id === app.id && w.isOpen) && (
-                  <motion.div 
-                    layoutId={`dock-indicator-${app.id}`}
-                    className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-pink-500 shadow-[0_0_8px_#ec4899]" 
-                  />
-                )}
-              </motion.button>
-            ))}
-          </div>
-
-          <div className="w-px h-10 bg-white/10 mx-2" />
-
-          {/* Active Apps Area */}
-          <div className="flex items-center gap-3 h-full">
-            {windows.filter(w => w.isOpen && !['gemini', 'nexus', 'towers'].includes(w.id)).map(win => {
-              const app = APPS_CONFIG[win.id];
-              const Icon = app.icon;
-              const isActive = !win.isMinimized;
-              return (
-                <motion.button 
-                  key={win.id}
-                  whileHover={{ backgroundColor: 'rgba(255,255,255,0.08)', y: -4 }}
-                  onClick={() => toggleWindow(win.id)}
-                  className={`h-14 px-4 rounded-2xl flex items-center gap-3 transition-all relative group border border-transparent ${isActive ? 'bg-white/10 border-white/10 shadow-xl' : 'hover:border-white/5'}`}
-                >
-                  <div className={`${app.color} w-10 h-10 rounded-xl flex items-center justify-center text-white shadow-lg`}>
-                    <Icon size={22} />
-                  </div>
-                  <motion.div 
-                    layoutId={`taskbar-indicator-${win.id}`}
-                    className={`absolute -bottom-1 left-1/2 -translate-x-1/2 h-1 rounded-full bg-pink-500 shadow-[0_0_10px_#ec4899] transition-all ${isActive ? 'w-8' : 'w-2 opacity-40'}`} 
-                  />
-                </motion.button>
-              );
-            })}
-          </div>
-        </div>
-
-        <div className="w-px h-10 bg-white/10 mx-2" />
-
-        {/* System Tray */}
-        <div className="flex items-center gap-6 h-full">
-          <motion.div 
-            whileHover={{ backgroundColor: 'rgba(255,255,255,0.05)' }}
-            onClick={() => setNexusOpen(!nexusOpen)}
-            className="flex items-center gap-4 cursor-pointer px-4 py-2 rounded-2xl transition-all border border-transparent hover:border-white/5"
-          >
-            <div className="flex flex-col items-end">
-              <span className="text-lg font-black font-mono tracking-tighter italic text-white leading-none">
-                {time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })}
-              </span>
-              <span className="text-[9px] font-black text-pink-400 uppercase tracking-[0.3em] mt-1">
-                {time.toLocaleDateString([], { day: '2-digit', month: '2-digit' })}
-              </span>
-            </div>
-            <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-white/30">
-              <Bell size={20} />
-            </div>
-          </motion.div>
-        </div>
-      </footer>
 
       {/* Notification Center / Nexus */}
       <AnimatePresence>

@@ -47,20 +47,20 @@ const AriaApp: React.FC = () => {
   return (
     <div className="flex flex-col h-full bg-[#010105] text-slate-100 font-sans">
       {/* Chat Header */}
-      <div className="p-6 border-b border-white/5 bg-white/5 flex items-center justify-between shrink-0 shadow-2xl">
-        <div className="flex items-center gap-4">
-          <div className="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-indigo-500/20">
-            <Heart size={24} fill="white" className="animate-pulse" />
+      <div className="p-6 border-b border-white/5 bg-white/5 flex flex-col items-center justify-center shrink-0 shadow-2xl gap-4">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-16 h-16 bg-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-indigo-500/20">
+            <Heart size={32} fill="white" className="animate-pulse" />
           </div>
-          <div>
-            <h2 className="text-xl font-black italic tracking-tighter uppercase text-white text-glitch">Aria Singularity</h2>
-            <div className="flex items-center gap-2">
+          <div className="text-center">
+            <h2 className="text-2xl font-black italic tracking-tighter uppercase text-white text-glitch">Aria Singularity</h2>
+            <div className="flex items-center justify-center gap-2">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_#10b981]" />
               <span className="text-[10px] text-white/40 font-black uppercase tracking-widest">En línea y Sincronizada</span>
             </div>
           </div>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="absolute top-6 right-6 flex items-center gap-3">
           <button className="p-3 hover:bg-white/10 rounded-xl text-white/30 hover:text-white transition-all border border-transparent hover:border-white/5">
             <ShieldCheck size={20} />
           </button>
