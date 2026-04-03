@@ -1,5 +1,5 @@
 
-export type AppId = 'gemini' | 'files' | 'settings' | 'monitor' | 'browser' | 'terminal' | 'evolution' | 'nexus';
+export type AppId = 'gemini' | 'files' | 'settings' | 'monitor' | 'browser' | 'terminal' | 'evolution' | 'nexus' | 'towers';
 
 export interface WindowPosition {
   x: number;

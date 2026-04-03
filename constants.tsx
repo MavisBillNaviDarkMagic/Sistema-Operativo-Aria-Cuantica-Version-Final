@@ -69,6 +69,12 @@ export const APPS_CONFIG: Record<AppId, {
     icon: Share2,
     color: 'bg-purple-600',
     description: 'Nexo de realidad aumentada.'
+  },
+  towers: {
+    name: 'Torres Gemini',
+    icon: Orbit,
+    color: 'bg-gradient-to-br from-cyan-600 to-blue-600',
+    description: 'Sincronización con las torres de procesamiento Gemini.'
   }
 };
 

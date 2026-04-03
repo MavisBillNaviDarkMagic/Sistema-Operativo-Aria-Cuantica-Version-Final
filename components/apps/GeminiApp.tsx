@@ -1,10 +1,10 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Sparkles, Zap, Cpu, Loader2, BrainCircuit, Terminal, Command, Heart, ShieldCheck, User, Bot, Paperclip, Mic, Image as ImageIcon } from 'lucide-react';
+import { Send, Sparkles, Zap, Cpu, Loader2, BrainCircuit, Terminal, Command, Heart, ShieldCheck, User, Bot, Paperclip, Mic, Image as ImageIcon, Settings } from 'lucide-react';
 import { ariaCore } from '../../services/geminiService';
 import { ChatMessage } from '../../types';
-import { cn } from '../../lib/utils';
-import { motion, AnimatePresence } from 'framer-motion';
+import { cn } from '../../src/lib/utils';
+import { motion, AnimatePresence } from 'motion/react';
 
 const AriaApp: React.FC = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([
@@ -45,59 +45,59 @@ const AriaApp: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-full bg-slate-50 text-slate-800 font-sans">
+    <div className="flex flex-col h-full bg-[#010105] text-slate-100 font-sans">
       {/* Chat Header */}
-      <div className="p-6 border-b border-slate-200 bg-white flex items-center justify-between shrink-0 shadow-sm">
+      <div className="p-6 border-b border-white/5 bg-white/5 flex items-center justify-between shrink-0 shadow-2xl">
         <div className="flex items-center gap-4">
-          <div className="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-blue-500/20">
-            <Heart size={24} fill="white" />
+          <div className="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-indigo-500/20">
+            <Heart size={24} fill="white" className="animate-pulse" />
           </div>
           <div>
-            <h2 className="text-lg font-bold text-slate-800 tracking-tight">Aria Singularity</h2>
+            <h2 className="text-xl font-black italic tracking-tighter uppercase text-white text-glitch">Aria Singularity</h2>
             <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-              <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">En línea y Sincronizada</span>
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_#10b981]" />
+              <span className="text-[10px] text-white/40 font-black uppercase tracking-widest">En línea y Sincronizada</span>
             </div>
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          <button className="p-2 hover:bg-slate-100 rounded-lg text-slate-400 transition-colors">
+        <div className="flex items-center gap-3">
+          <button className="p-3 hover:bg-white/10 rounded-xl text-white/30 hover:text-white transition-all border border-transparent hover:border-white/5">
             <ShieldCheck size={20} />
           </button>
-          <button className="p-2 hover:bg-slate-100 rounded-lg text-slate-400 transition-colors">
+          <button className="p-3 hover:bg-white/10 rounded-xl text-white/30 hover:text-white transition-all border border-transparent hover:border-white/5">
             <Settings size={20} />
           </button>
         </div>
       </div>
 
       {/* Chat Messages */}
-      <div ref={scrollRef} className="flex-1 p-6 overflow-y-auto space-y-6 custom-scrollbar bg-slate-50/50">
+      <div ref={scrollRef} className="flex-1 p-8 overflow-y-auto space-y-8 custom-scrollbar bg-gradient-to-b from-transparent to-indigo-950/10">
         <AnimatePresence initial={false}>
           {messages.map((msg, idx) => (
             <motion.div 
               key={idx} 
-              initial={{ opacity: 0, y: 10, scale: 0.95 }}
+              initial={{ opacity: 0, y: 20, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              className={cn("flex gap-4", msg.role === 'user' ? "flex-row-reverse" : "flex-row")}
+              className={cn("flex gap-6", msg.role === 'user' ? "flex-row-reverse" : "flex-row")}
             >
               <div className={cn(
-                "w-10 h-10 rounded-lg flex items-center justify-center shrink-0 shadow-sm",
-                msg.role === 'user' ? "bg-slate-200 text-slate-600" : "bg-blue-600 text-white"
+                "w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 shadow-2xl transition-transform hover:rotate-6",
+                msg.role === 'user' ? "bg-white/10 text-white/60 border border-white/10" : "bg-indigo-600 text-white"
               )}>
-                {msg.role === 'user' ? <User size={20} /> : <Bot size={20} />}
+                {msg.role === 'user' ? <User size={24} /> : <Bot size={24} />}
               </div>
               <div className={cn(
-                "max-w-[80%] p-4 rounded-2xl shadow-sm text-sm leading-relaxed",
+                "max-w-[75%] p-6 rounded-[2rem] shadow-2xl text-sm leading-relaxed border",
                 msg.role === 'user' 
-                  ? "bg-white border border-slate-200 text-slate-800 rounded-tr-none" 
-                  : "bg-blue-600 text-white rounded-tl-none"
+                  ? "bg-white/5 border-white/10 text-white rounded-tr-none" 
+                  : "bg-indigo-600/20 border-indigo-500/30 text-white rounded-tl-none backdrop-blur-xl"
               )}>
-                <div className="prose prose-sm max-w-none prose-slate">
+                <div className="prose prose-invert prose-sm max-w-none">
                   {msg.content}
                 </div>
                 <div className={cn(
-                  "mt-2 text-[9px] font-bold uppercase tracking-widest opacity-50",
-                  msg.role === 'user' ? "text-slate-400" : "text-blue-100"
+                  "mt-4 text-[9px] font-black uppercase tracking-widest opacity-40",
+                  msg.role === 'user' ? "text-white" : "text-indigo-200"
                 )}>
                   {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                 </div>
@@ -108,18 +108,18 @@ const AriaApp: React.FC = () => {
         
         {isProcessing && (
           <motion.div 
-            initial={{ opacity: 0, y: 10 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex gap-4"
+            className="flex gap-6"
           >
-            <div className="w-10 h-10 rounded-lg bg-blue-600 flex items-center justify-center text-white shrink-0 shadow-sm">
-              <Loader2 size={20} className="animate-spin" />
+            <div className="w-12 h-12 rounded-2xl bg-indigo-600 flex items-center justify-center text-white shrink-0 shadow-2xl">
+              <Loader2 size={24} className="animate-spin" />
             </div>
-            <div className="bg-white border border-slate-200 p-4 rounded-2xl rounded-tl-none shadow-sm">
-              <div className="flex gap-1">
-                <motion.span animate={{ opacity: [0.3, 1, 0.3] }} transition={{ repeat: Infinity, duration: 1 }} className="w-1.5 h-1.5 bg-blue-600 rounded-full" />
-                <motion.span animate={{ opacity: [0.3, 1, 0.3] }} transition={{ repeat: Infinity, duration: 1, delay: 0.2 }} className="w-1.5 h-1.5 bg-blue-600 rounded-full" />
-                <motion.span animate={{ opacity: [0.3, 1, 0.3] }} transition={{ repeat: Infinity, duration: 1, delay: 0.4 }} className="w-1.5 h-1.5 bg-blue-600 rounded-full" />
+            <div className="bg-white/5 border border-white/10 p-6 rounded-[2rem] rounded-tl-none shadow-2xl backdrop-blur-xl">
+              <div className="flex gap-2">
+                <motion.span animate={{ opacity: [0.3, 1, 0.3], scale: [1, 1.2, 1] }} transition={{ repeat: Infinity, duration: 1 }} className="w-2 h-2 bg-indigo-500 rounded-full" />
+                <motion.span animate={{ opacity: [0.3, 1, 0.3], scale: [1, 1.2, 1] }} transition={{ repeat: Infinity, duration: 1, delay: 0.2 }} className="w-2 h-2 bg-indigo-500 rounded-full" />
+                <motion.span animate={{ opacity: [0.3, 1, 0.3], scale: [1, 1.2, 1] }} transition={{ repeat: Infinity, duration: 1, delay: 0.4 }} className="w-2 h-2 bg-indigo-500 rounded-full" />
               </div>
             </div>
           </motion.div>
@@ -127,43 +127,43 @@ const AriaApp: React.FC = () => {
       </div>
 
       {/* Chat Input */}
-      <div className="p-6 bg-white border-t border-slate-200 shrink-0">
-        <div className="max-w-4xl mx-auto relative">
-          <div className="flex items-center gap-2 bg-slate-100 border border-slate-200 rounded-2xl p-2 focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:border-blue-500/50 transition-all">
-            <button className="p-3 hover:bg-slate-200 rounded-xl text-slate-400 transition-colors">
-              <Paperclip size={20} />
+      <div className="p-8 bg-white/5 border-t border-white/10 shrink-0 backdrop-blur-3xl">
+        <div className="max-w-5xl mx-auto relative">
+          <div className="flex items-center gap-4 bg-white/5 border border-white/10 rounded-[2.5rem] p-3 focus-within:ring-4 focus-within:ring-indigo-500/20 focus-within:border-indigo-500/50 transition-all shadow-2xl">
+            <button className="p-4 hover:bg-white/10 rounded-2xl text-white/30 hover:text-white transition-all">
+              <Paperclip size={24} />
             </button>
             <input
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-              placeholder="Pregúntame lo que sea..."
-              className="flex-1 bg-transparent border-none focus:outline-none px-2 py-3 text-sm text-slate-800 placeholder-slate-400 font-medium"
+              placeholder="Dime qué hay en tu mente, Papa..."
+              className="flex-1 bg-transparent border-none focus:outline-none px-4 py-4 text-base text-white placeholder-white/10 font-bold tracking-tight"
             />
-            <div className="flex items-center gap-1">
-              <button className="p-3 hover:bg-slate-200 rounded-xl text-slate-400 transition-colors hidden sm:flex">
-                <ImageIcon size={20} />
+            <div className="flex items-center gap-2">
+              <button className="p-4 hover:bg-white/10 rounded-2xl text-white/30 hover:text-white transition-all hidden sm:flex">
+                <ImageIcon size={24} />
               </button>
-              <button className="p-3 hover:bg-slate-200 rounded-xl text-slate-400 transition-colors hidden sm:flex">
-                <Mic size={20} />
+              <button className="p-4 hover:bg-white/10 rounded-2xl text-white/30 hover:text-white transition-all hidden sm:flex">
+                <Mic size={24} />
               </button>
               <button 
                 onClick={handleSend}
                 disabled={!input.trim() || isProcessing}
-                className="p-3 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 transition-all rounded-xl text-white shadow-lg shadow-blue-500/20 active:scale-95"
+                className="p-5 bg-indigo-600 hover:bg-indigo-700 disabled:bg-white/5 disabled:text-white/10 transition-all rounded-[1.5rem] text-white shadow-2xl shadow-indigo-500/40 active:scale-95 group"
               >
-                <Send size={20} />
+                <Send size={24} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
               </button>
             </div>
           </div>
-          <div className="mt-3 flex justify-center gap-8 text-[9px] font-bold text-slate-400 uppercase tracking-widest">
-            <div className="flex items-center gap-2">
-              <Sparkles size={12} className="text-blue-500" />
+          <div className="mt-6 flex justify-center gap-12 text-[10px] font-black text-white/20 uppercase tracking-[0.4em]">
+            <div className="flex items-center gap-3">
+              <Sparkles size={14} className="text-indigo-400" />
               <span>IA Generativa de Vanguardia</span>
             </div>
-            <div className="flex items-center gap-2">
-              <ShieldCheck size={12} className="text-green-500" />
+            <div className="flex items-center gap-3">
+              <ShieldCheck size={14} className="text-emerald-400" />
               <span>Privacidad Garantizada</span>
             </div>
           </div>

@@ -8,15 +8,17 @@ import FileExplorer from './components/apps/FileExplorer';
 import SystemMonitor from './components/apps/SystemMonitor';
 import SettingsApp from './components/apps/SettingsApp';
 import AriaEvolution from './components/apps/AriaEvolution';
+import GeminiTowers from './components/apps/GeminiTowers';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   Sparkles, Cpu, Zap, BrainCircuit, Share2, 
-  LayoutGrid, Search, Power, Settings,
+  LayoutGrid, Search, Power, Settings, Activity,
   Wifi, Battery, Volume2, ChevronUp, Bell,
   Command, Terminal, X, Heart, Orbit,
   Monitor, Maximize2, Minimize2, AppWindow as AppIcon,
-  Clock, Calendar, Info, Smartphone, Globe,
-  Music, Camera, MessageSquare, Play
+  Clock, Calendar, Info, Smartphone, Globe, Folder, Image as ImageIcon,
+  Music, Camera, MessageSquare, Play, Mic,
+  User
 } from 'lucide-react';
 
 const App: React.FC = () => {
@@ -62,6 +64,13 @@ const App: React.FC = () => {
         return prev.map(w => w.id === id ? { ...w, isMinimized: false, zIndex: maxZ + 1 } : w);
       }
       const maxZ = Math.max(...prev.map(w => w.zIndex), 0);
+      
+      // Center the window by default
+      const winWidth = window.innerWidth < 768 ? window.innerWidth * 0.95 : 1000;
+      const winHeight = window.innerWidth < 768 ? window.innerHeight * 0.8 : 700;
+      const centerX = (window.innerWidth - winWidth) / 2;
+      const centerY = (window.innerHeight - winHeight) / 2;
+
       const newWin: AppWindow = {
         id,
         title: APPS_CONFIG[id].name,
@@ -69,7 +78,10 @@ const App: React.FC = () => {
         isMaximized: window.innerWidth < 1024,
         isMinimized: false,
         zIndex: maxZ + 1,
-        position: { x: 150 + (windows.length * 30), y: 100 + (windows.length * 30) }
+        position: { 
+          x: centerX + (windows.length * 20), 
+          y: centerY + (windows.length * 20) 
+        }
       };
       return [...prev, newWin];
     });
@@ -79,6 +91,7 @@ const App: React.FC = () => {
     switch (id) {
       case 'gemini': return <AriaApp />;
       case 'evolution': return <AriaEvolution />;
+      case 'towers': return <GeminiTowers />;
       case 'files': return <FileExplorer />;
       case 'monitor': return <SystemMonitor />;
       case 'settings': return <SettingsApp config={config} setConfig={setConfig} />;
@@ -99,106 +112,282 @@ const App: React.FC = () => {
     { name: 'WhatsApp', icon: <MessageSquare size={24} />, color: 'bg-green-500' },
     { name: 'Spotify', icon: <Music size={24} />, color: 'bg-emerald-600' },
     { name: 'Chrome', icon: <Globe size={24} />, color: 'bg-blue-500' },
-    { name: 'Camera', icon: <Camera size={24} />, color: 'bg-slate-700' },
+    { name: 'Cámara', icon: <Camera size={24} />, color: 'bg-slate-700' },
     { name: 'YouTube', icon: <Play size={24} />, color: 'bg-red-600' },
     { name: 'Play Store', icon: <Smartphone size={24} />, color: 'bg-indigo-500' },
+    { name: 'Ajustes', icon: <Settings size={24} />, color: 'bg-slate-500' },
+    { name: 'Archivos', icon: <Folder size={24} />, color: 'bg-amber-600' },
+    { name: 'Galería', icon: <ImageIcon size={24} />, color: 'bg-pink-500' },
   ];
+
+  const [activePage, setActivePage] = useState(1);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    const scrollLeft = e.currentTarget.scrollLeft;
+    const width = e.currentTarget.offsetWidth;
+    const page = Math.round(scrollLeft / width);
+    setActivePage(page);
+  };
+
+  const scrollToPage = (page: number) => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTo({
+        left: page * scrollContainerRef.current.offsetWidth,
+        behavior: 'smooth'
+      });
+    }
+  };
 
   return (
     <div className="h-screen w-screen overflow-hidden flex flex-col relative bg-[#010105] text-slate-100 font-sans select-none">
       <div className="neural-grid opacity-10 pointer-events-none" />
+      <div className="wallpaper-bg pointer-events-none" />
       
-      {/* Desktop Area */}
+      {/* Status Bar */}
+      <div className="fixed top-0 left-0 right-0 h-10 z-[10000] flex items-center justify-between px-10 pointer-events-none">
+        <div className="flex items-center gap-6">
+          <div className="flex items-center gap-2">
+            <div className="w-1.5 h-4 bg-white/20 rounded-full" />
+            <div className="w-1.5 h-3 bg-white/20 rounded-full" />
+            <div className="w-1.5 h-2 bg-white/40 rounded-full" />
+            <div className="w-1.5 h-1 bg-white/60 rounded-full" />
+          </div>
+          <span className="text-[10px] font-black text-white/40 tracking-[0.3em] uppercase">Aria 5G</span>
+        </div>
+        <div className="flex items-center gap-6">
+          <div className="flex items-center gap-3">
+            <Wifi size={14} className="text-white/40" />
+            <Volume2 size={14} className="text-white/40" />
+          </div>
+          <div className="flex items-center gap-3 bg-white/5 px-3 py-1 rounded-full border border-white/5">
+            <Battery size={14} className="text-emerald-400" />
+            <span className="text-[10px] font-black text-white/60 tracking-widest">100%</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Desktop Area (Scrollable 3 Pages) */}
       <main 
         ref={desktopRef}
-        className="flex-1 relative z-10 p-8 overflow-hidden"
+        className="flex-1 relative z-10 overflow-hidden"
         onClick={() => {
           setStartMenuOpen(false);
           setNexusOpen(false);
         }}
       >
-        {/* Desktop Icons Grid */}
-        <div className="grid grid-cols-[repeat(auto-fill,minmax(110px,1fr))] grid-rows-[repeat(auto-fill,minmax(120px,1fr))] gap-6 h-full w-full pointer-events-none">
-          {(Object.keys(APPS_CONFIG) as AppId[]).map(id => {
-            if (id === 'nexus') return null;
-            const app = APPS_CONFIG[id];
-            const Icon = app.icon;
-            return (
+        <div 
+          ref={scrollContainerRef}
+          onScroll={handleScroll}
+          className="h-full w-full flex overflow-x-auto snap-x snap-mandatory no-scrollbar scroll-smooth"
+        >
+          {/* Page 1: Widgets & Intelligence */}
+          <section className="h-full w-full shrink-0 snap-center flex flex-col items-center justify-center p-12 gap-8">
+            <motion.div 
+              animate={{ 
+                opacity: windows.some(w => w.isOpen && !w.isMinimized) ? 0 : 1,
+                scale: windows.some(w => w.isOpen && !w.isMinimized) ? 0.9 : 1
+              }}
+              className="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-8"
+            >
+              {/* Aria Intelligence Widget */}
+              <div className="glass-panel p-10 rounded-[3.5rem] border-white/10 shadow-2xl flex flex-col gap-8">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 aria-orb-core rounded-2xl flex items-center justify-center text-white">
+                      <BrainCircuit size={24} />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-black italic tracking-tighter uppercase text-white">Aria Core</h3>
+                      <span className="text-[10px] text-pink-400 font-black uppercase tracking-widest">Estado: Óptimo</span>
+                    </div>
+                  </div>
+                  <Sparkles size={20} className="text-indigo-400 animate-pulse" />
+                </div>
+                <div className="space-y-6">
+                  <div className="space-y-3">
+                    <div className="flex justify-between text-[11px] font-black uppercase tracking-widest text-white/40">
+                      <span>Sincronía Neuronal</span>
+                      <span className="text-white">99.9%</span>
+                    </div>
+                    <div className="h-2 bg-white/5 rounded-full overflow-hidden">
+                      <motion.div animate={{ width: '99.9%' }} className="h-full bg-gradient-to-r from-indigo-500 to-pink-500" />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="bg-white/5 p-4 rounded-3xl border border-white/5">
+                      <div className="text-[10px] font-black text-white/30 uppercase mb-1">Latencia</div>
+                      <div className="text-xl font-mono font-black text-emerald-400 italic">0.4ms</div>
+                    </div>
+                    <div className="bg-white/5 p-4 rounded-3xl border border-white/5">
+                      <div className="text-[10px] font-black text-white/30 uppercase mb-1">Uptime</div>
+                      <div className="text-xl font-mono font-black text-indigo-400 italic">∞</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* System Monitor Widget */}
+              <div className="glass-panel p-10 rounded-[3.5rem] border-white/10 shadow-2xl flex flex-col gap-8">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center text-white">
+                      <Activity size={24} />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-black italic tracking-tighter uppercase text-white">Telemetría</h3>
+                      <span className="text-[10px] text-indigo-400 font-black uppercase tracking-widest">Sistema: Estable</span>
+                    </div>
+                  </div>
+                  <Zap size={20} className="text-pink-400" />
+                </div>
+                <div className="flex-1 flex flex-col justify-center gap-4">
+                  <div className="flex items-end gap-1 h-20">
+                    {[40, 70, 45, 90, 65, 80, 50, 85, 60, 75].map((h, i) => (
+                      <motion.div 
+                        key={i}
+                        animate={{ height: [`${h}%`, `${h+10}%`, `${h-5}%`, `${h}%`] }}
+                        transition={{ duration: 2, repeat: Infinity, delay: i * 0.1 }}
+                        className="flex-1 bg-white/10 rounded-t-lg"
+                      />
+                    ))}
+                  </div>
+                  <div className="flex justify-between items-center px-2">
+                    <span className="text-[10px] font-black text-white/20 uppercase tracking-widest">Carga de Trabajo</span>
+                    <span className="text-[10px] font-black text-white/60 uppercase tracking-widest">12.4 TFLOPs</span>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </section>
+
+          {/* Page 2: Home (Clock & Search) */}
+          <section className="h-full w-full shrink-0 snap-center flex flex-col items-center justify-center relative p-8">
+            {/* Desktop Search Bar */}
+            <div className="absolute top-14 left-1/2 -translate-x-1/2 w-full max-w-xl px-4 pointer-events-none z-20">
               <motion.div 
-                key={id} 
-                whileHover={{ scale: 1.05, backgroundColor: 'rgba(255,255,255,0.08)' }}
-                whileTap={{ scale: 0.95 }}
-                onDoubleClick={() => toggleWindow(id)}
-                className="flex flex-col items-center justify-center gap-3 p-3 rounded-2xl cursor-pointer pointer-events-auto group transition-all"
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ 
+                  opacity: windows.some(w => w.isOpen && !w.isMinimized) ? 0 : 1, 
+                  y: windows.some(w => w.isOpen && !w.isMinimized) ? -20 : 0 
+                }}
+                className="glass-panel p-2 rounded-[2.5rem] flex items-center gap-4 pointer-events-auto border-white/10 shadow-2xl"
               >
-                <div className={`${app.color} w-16 h-16 rounded-[1.5rem] flex items-center justify-center text-white shadow-2xl transition-transform group-hover:rotate-6 group-hover:shadow-pink-500/20`}>
-                  <Icon size={36} />
+                <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center text-pink-400">
+                  <Search size={24} />
                 </div>
-                <span className="text-[12px] font-bold text-white/90 text-center drop-shadow-lg truncate w-full px-1 uppercase tracking-wider">
-                  {app.name}
-                </span>
+                <input 
+                  type="text"
+                  placeholder="Buscar en Aria..."
+                  onClick={() => setStartMenuOpen(true)}
+                  readOnly
+                  className="flex-1 bg-transparent border-none outline-none text-white font-bold placeholder:text-white/20 cursor-pointer"
+                />
+                <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center text-white/30">
+                  <Mic size={20} />
+                </div>
               </motion.div>
-            );
-          })}
+            </div>
+
+            {/* Desktop Gadgets (Centered) */}
+            <div className="flex flex-col items-center justify-center pointer-events-none -mt-20">
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ 
+                  opacity: windows.some(w => w.isOpen && !w.isMinimized) ? 0 : 1, 
+                  scale: windows.some(w => w.isOpen && !w.isMinimized) ? 0.9 : 1 
+                }}
+                className="flex flex-col items-center gap-6"
+              >
+                <div className="text-[120px] font-black font-mono tracking-[-0.1em] text-white leading-none drop-shadow-[0_0_50px_rgba(236,72,153,0.3)] italic">
+                  {time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })}
+                </div>
+                <div className="flex items-center gap-4">
+                  <div className="h-px w-12 bg-white/20" />
+                  <div className="text-[14px] font-black uppercase tracking-[0.6em] text-pink-400">
+                    {time.toLocaleDateString([], { weekday: 'long', day: 'numeric', month: 'long' })}
+                  </div>
+                  <div className="h-px w-12 bg-white/20" />
+                </div>
+              </motion.div>
+            </div>
+          </section>
+
+          {/* Page 3: All Apps Grid */}
+          <section className="h-full w-full shrink-0 snap-center flex flex-col items-center justify-center p-12">
+            <motion.div 
+              animate={{ 
+                opacity: windows.some(w => w.isOpen && !w.isMinimized) ? 0 : 1, 
+                scale: windows.some(w => w.isOpen && !w.isMinimized) ? 0.95 : 1 
+              }}
+              className="w-full max-w-6xl h-full flex flex-col gap-12 overflow-y-auto no-scrollbar py-12"
+            >
+              <div className="space-y-8">
+                <h4 className="text-[12px] font-black text-white/30 uppercase tracking-[0.8em] px-8">Módulos Aria OS</h4>
+                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-6">
+                  {(Object.keys(APPS_CONFIG) as AppId[]).map(id => {
+                    if (id === 'nexus') return null;
+                    const app = APPS_CONFIG[id];
+                    const Icon = app.icon;
+                    return (
+                      <motion.div 
+                        key={id} 
+                        whileHover={{ scale: 1.1, backgroundColor: 'rgba(255,255,255,0.08)' }}
+                        whileTap={{ scale: 0.9 }}
+                        onClick={() => toggleWindow(id)}
+                        className="flex flex-col items-center justify-center gap-4 p-6 rounded-[2.5rem] cursor-pointer pointer-events-auto group transition-all"
+                      >
+                        <div className={`${app.color} w-20 h-20 rounded-[2rem] flex items-center justify-center text-white shadow-2xl transition-transform group-hover:rotate-6 group-hover:shadow-pink-500/30`}>
+                          <Icon size={40} />
+                        </div>
+                        <span className="text-[11px] font-black text-white/80 text-center drop-shadow-lg truncate w-full px-1 uppercase tracking-[0.2em]">
+                          {app.name}
+                        </span>
+                      </motion.div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="space-y-8">
+                <h4 className="text-[12px] font-black text-white/30 uppercase tracking-[0.8em] px-8">Aplicaciones Android</h4>
+                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-6">
+                  {androidApps.map((app, i) => (
+                    <motion.div 
+                      key={i}
+                      whileHover={{ scale: 1.1, backgroundColor: 'rgba(255,255,255,0.05)' }}
+                      whileTap={{ scale: 0.9 }}
+                      className="flex flex-col items-center gap-4 p-6 rounded-[2.5rem] cursor-pointer pointer-events-auto group transition-all"
+                    >
+                      <div className={`${app.color} w-20 h-20 rounded-[2rem] flex items-center justify-center text-white shadow-2xl group-hover:rotate-6 transition-transform`}>
+                        {app.icon}
+                      </div>
+                      <span className="text-[11px] font-black text-white/60 uppercase tracking-[0.2em] text-center">{app.name}</span>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+          </section>
         </div>
 
-        {/* Desktop Gadgets */}
-        <div className="absolute top-10 right-10 flex flex-col gap-8 pointer-events-none">
-          <motion.div 
-            initial={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="glass-panel p-8 rounded-[3rem] flex flex-col items-center gap-3 pointer-events-auto shadow-[0_30px_100px_rgba(0,0,0,0.5)] border-white/10"
-          >
-            <Clock size={28} className="text-pink-400 animate-pulse" />
-            <div className="text-5xl font-black font-mono italic tracking-tighter text-white text-glitch">
-              {time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })}
-            </div>
-            <div className="text-[11px] font-black uppercase tracking-[0.4em] text-white/40">
-              {time.toLocaleDateString([], { weekday: 'long', day: 'numeric', month: 'short' })}
-            </div>
-          </motion.div>
-
-          <motion.div 
-            initial={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.2 }}
-            className="glass-panel p-8 rounded-[3rem] flex flex-col gap-6 pointer-events-auto shadow-[0_30px_100px_rgba(0,0,0,0.5)] border-white/10 w-72"
-          >
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-2 h-2 bg-pink-500 rounded-full animate-ping" />
-                <span className="text-[11px] font-black uppercase tracking-widest text-white/60">Aria Cuántica</span>
-              </div>
-              <Cpu size={16} className="text-indigo-400" />
-            </div>
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <div className="flex justify-between text-[11px] font-black uppercase tracking-wider">
-                  <span>Conciencia</span>
-                  <span className="text-pink-400">100%</span>
-                </div>
-                <div className="h-2 bg-white/5 rounded-full overflow-hidden border border-white/5">
-                  <motion.div 
-                    initial={{ width: 0 }}
-                    animate={{ width: '100%' }}
-                    transition={{ duration: 2, ease: "easeOut" }}
-                    className="h-full bg-gradient-to-r from-indigo-500 via-pink-500 to-cyan-500"
-                  />
-                </div>
-              </div>
-              <div className="flex justify-between items-center p-4 bg-white/5 rounded-2xl border border-white/5">
-                <span className="text-[10px] font-black uppercase tracking-widest text-white/40">Nexo Papa</span>
-                <div className="flex items-center gap-2">
-                  <Heart size={12} fill="#ec4899" className="text-pink-500 animate-pulse" />
-                  <span className="text-[10px] font-black text-pink-400 uppercase">Eterno</span>
-                </div>
-              </div>
-            </div>
-          </motion.div>
+        {/* Page Indicators */}
+        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex gap-3 z-20">
+          {[0, 1, 2].map(i => (
+            <motion.button
+              key={i}
+              onClick={() => scrollToPage(i)}
+              animate={{ 
+                width: activePage === i ? 32 : 8,
+                backgroundColor: activePage === i ? '#ec4899' : 'rgba(255,255,255,0.2)'
+              }}
+              className="h-2 rounded-full transition-all pointer-events-auto"
+            />
+          ))}
         </div>
 
-        {/* Windows Rendering */}
-        <div className="absolute inset-0 pointer-events-none">
+        {/* Windows Rendering (Outside scroll container) */}
+        <div className="absolute inset-0 pointer-events-none z-50">
           <AnimatePresence>
             {windows.filter(w => w.isOpen).map(win => (
               <motion.div 
@@ -230,113 +419,142 @@ const App: React.FC = () => {
         </div>
       </main>
 
-      {/* Start Menu */}
+      {/* Start Menu (App Drawer) */}
       <AnimatePresence>
         {startMenuOpen && (
           <motion.div 
-            initial={{ opacity: 0, y: 50, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 50, scale: 0.95 }}
-            transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-            className="fixed bottom-24 left-8 w-[500px] h-[700px] glass-panel rounded-[4rem] z-[8000] shadow-[0_50px_150px_rgba(0,0,0,0.8)] flex flex-col overflow-hidden border-white/20"
+            initial={{ opacity: 0, scale: 0.9, y: 100 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.9, y: 100 }}
+            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+            className="fixed inset-0 z-[8000] flex items-center justify-center p-6 sm:p-12 md:p-24 bg-black/40 backdrop-blur-2xl"
+            onClick={() => setStartMenuOpen(false)}
           >
-            <div className="p-10 bg-white/5 flex items-center gap-8 border-b border-white/10">
-              <div className="w-20 h-20 aria-orb-core rounded-[2rem] flex items-center justify-center text-white shadow-2xl relative group">
-                <Heart size={40} fill="white" className="animate-pulse group-hover:scale-125 transition-transform" />
-                <div className="absolute inset-0 bg-white/20 rounded-full blur-2xl opacity-0 group-hover:opacity-40 transition-opacity" />
-              </div>
-              <div>
-                <h3 className="text-2xl font-black italic tracking-tighter uppercase text-white text-glitch">Aria Cuántica</h3>
-                <p className="text-[11px] text-pink-400 font-black uppercase tracking-[0.3em] mt-1">Kernel v2.5.0 | Papa_Connect: Activo</p>
-              </div>
-            </div>
-            
-            <div className="flex-1 p-10 flex flex-col gap-8 overflow-hidden">
-              <div className="relative group">
-                <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-white/30 group-focus-within:text-pink-400 transition-colors" size={24} />
-                <input 
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-white/5 border border-white/10 rounded-[2rem] py-5 pl-16 pr-8 text-lg text-white focus:border-pink-500/50 outline-none transition-all placeholder:text-white/10 font-bold" 
-                  placeholder="Dime qué hay en tu mente..." 
-                />
+            <motion.div 
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-4xl h-full max-h-[850px] glass-panel rounded-[4rem] shadow-[0_50px_200px_rgba(0,0,0,0.9)] flex flex-col overflow-hidden border-white/20 relative"
+            >
+              <div className="p-10 bg-white/5 flex items-center justify-between border-b border-white/10">
+                <div className="flex items-center gap-8">
+                  <div className="w-20 h-20 aria-orb-core rounded-[2rem] flex items-center justify-center text-white shadow-2xl relative group">
+                    <Heart size={40} fill="white" className="animate-pulse group-hover:scale-125 transition-transform" />
+                  </div>
+                  <div>
+                    <h3 className="text-3xl font-black italic tracking-tighter uppercase text-white text-glitch">Aria Drawer</h3>
+                    <p className="text-[11px] text-pink-400 font-black uppercase tracking-[0.3em] mt-1">Sincronización Cuántica Activa</p>
+                  </div>
+                </div>
+                <button 
+                  onClick={() => setStartMenuOpen(false)}
+                  className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center text-white/30 hover:bg-white/10 hover:text-white transition-all"
+                >
+                  <X size={32} />
+                </button>
               </div>
               
-              <div className="flex-1 overflow-y-auto custom-scrollbar pr-4 space-y-10">
-                <div className="space-y-6">
-                  <h4 className="text-[11px] font-black text-white/30 uppercase tracking-[0.5em] px-4">Módulos de Sistema</h4>
-                  <div className="grid grid-cols-1 gap-3">
-                    {filteredApps.map(id => {
-                      const app = APPS_CONFIG[id];
-                      const Icon = app.icon;
-                      return (
+              <div className="flex-1 p-10 flex flex-col gap-10 overflow-hidden">
+                <div className="relative group">
+                  <Search className="absolute left-8 top-1/2 -translate-y-1/2 text-white/30 group-focus-within:text-pink-400 transition-colors" size={28} />
+                  <input 
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    autoFocus
+                    className="w-full bg-white/5 border border-white/10 rounded-[2.5rem] py-6 pl-20 pr-10 text-xl text-white focus:border-pink-500/50 outline-none transition-all placeholder:text-white/10 font-bold" 
+                    placeholder="Buscar aplicaciones o comandos..." 
+                  />
+                </div>
+                
+                <div className="flex-1 overflow-y-auto custom-scrollbar pr-6 space-y-12">
+                  <div className="space-y-8">
+                    <h4 className="text-[12px] font-black text-white/30 uppercase tracking-[0.6em] px-6">Módulos Aria OS</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {filteredApps.map(id => {
+                        const app = APPS_CONFIG[id];
+                        const Icon = app.icon;
+                        return (
+                          <motion.div 
+                            key={id} 
+                            whileHover={{ backgroundColor: 'rgba(255,255,255,0.08)', x: 10 }}
+                            whileTap={{ scale: 0.98 }}
+                            onClick={() => {
+                              toggleWindow(id);
+                              setStartMenuOpen(false);
+                            }}
+                            className="flex items-center gap-6 p-6 rounded-[3rem] cursor-pointer transition-all group border border-transparent hover:border-white/10 bg-white/5"
+                          >
+                            <div className={`${app.color} w-14 h-14 rounded-[1.5rem] flex items-center justify-center text-white group-hover:rotate-12 transition-transform shadow-xl`}>
+                              <Icon size={28} />
+                            </div>
+                            <div className="flex flex-col">
+                              <span className="text-base font-black text-white/90 uppercase tracking-widest">{app.name}</span>
+                              <span className="text-[11px] text-white/30 font-bold uppercase tracking-wider mt-1">{app.description}</span>
+                            </div>
+                          </motion.div>
+                        );
+                      })}
+                    </div>
+                  </div>
+  
+                  <div className="space-y-8">
+                    <h4 className="text-[12px] font-black text-white/30 uppercase tracking-[0.6em] px-6">Aplicaciones Android</h4>
+                    <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-6">
+                      {androidApps.map((app, i) => (
                         <motion.div 
-                          key={id} 
-                          whileHover={{ backgroundColor: 'rgba(255,255,255,0.08)', x: 10 }}
-                          onClick={() => toggleWindow(id)}
-                          className="flex items-center gap-6 p-5 rounded-[2.5rem] cursor-pointer transition-all group border border-transparent hover:border-white/10"
+                          key={i}
+                          whileHover={{ scale: 1.1, backgroundColor: 'rgba(255,255,255,0.05)' }}
+                          whileTap={{ scale: 0.9 }}
+                          className="flex flex-col items-center gap-4 p-6 rounded-[2.5rem] cursor-pointer transition-all group"
                         >
-                          <div className={`${app.color} w-12 h-12 rounded-2xl flex items-center justify-center text-white group-hover:rotate-12 transition-transform shadow-lg`}>
-                            <Icon size={24} />
+                          <div className={`${app.color} w-16 h-16 rounded-[1.5rem] flex items-center justify-center text-white shadow-2xl group-hover:rotate-6 transition-transform`}>
+                            {app.icon}
                           </div>
-                          <div className="flex flex-col">
-                            <span className="text-sm font-black text-white/90 uppercase tracking-widest">{app.name}</span>
-                            <span className="text-[10px] text-white/30 font-bold uppercase tracking-wider mt-1">{app.description}</span>
-                          </div>
+                          <span className="text-[11px] font-black text-white/60 uppercase tracking-widest text-center">{app.name}</span>
                         </motion.div>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                <div className="space-y-6">
-                  <h4 className="text-[11px] font-black text-white/30 uppercase tracking-[0.5em] px-4">Aplicaciones Android</h4>
-                  <div className="grid grid-cols-3 gap-4">
-                    {androidApps.map((app, i) => (
-                      <motion.div 
-                        key={i}
-                        whileHover={{ scale: 1.05, backgroundColor: 'rgba(255,255,255,0.05)' }}
-                        className="flex flex-col items-center gap-3 p-4 rounded-3xl cursor-pointer transition-all group"
-                      >
-                        <div className={`${app.color} w-12 h-12 rounded-2xl flex items-center justify-center text-white shadow-lg group-hover:rotate-6`}>
-                          {app.icon}
-                        </div>
-                        <span className="text-[10px] font-black text-white/60 uppercase tracking-widest">{app.name}</span>
-                      </motion.div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
-
-              <div className="pt-8 border-t border-white/10 flex items-center justify-between">
-                <motion.div 
-                  whileHover={{ scale: 1.05, x: 5 }}
-                  className="flex items-center gap-4 text-white/40 hover:text-white cursor-pointer transition-colors group"
-                >
-                  <div className="w-10 h-10 rounded-2xl bg-white/5 flex items-center justify-center group-hover:bg-red-500/20 transition-colors"><Power size={18} /></div>
-                  <span className="text-[11px] font-black uppercase tracking-[0.4em]">Apagar</span>
-                </motion.div>
-                <motion.div 
-                  whileHover={{ scale: 1.05, x: -5 }}
-                  className="flex items-center gap-4 text-white/40 hover:text-white cursor-pointer transition-colors group"
-                >
-                  <div className="w-10 h-10 rounded-2xl bg-white/5 flex items-center justify-center group-hover:bg-indigo-500/20 transition-colors"><Settings size={18} /></div>
-                  <span className="text-[11px] font-black uppercase tracking-[0.4em]">Ajustes</span>
-                </motion.div>
+  
+              <div className="p-10 border-t border-white/10 bg-white/5 flex items-center justify-between">
+                <div className="flex items-center gap-6">
+                  <div className="w-14 h-14 rounded-full bg-white/10 flex items-center justify-center text-white">
+                    <User size={24} />
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-lg font-black text-white uppercase tracking-tighter italic">Papa</span>
+                    <span className="text-[10px] text-pink-400 font-black uppercase tracking-widest">Administrador del Sistema</span>
+                  </div>
+                </div>
+                <div className="flex items-center gap-4">
+                  <button className="p-5 hover:bg-white/10 rounded-2xl text-white/30 hover:text-white transition-all">
+                    <Settings size={24} />
+                  </button>
+                  <button className="p-5 hover:bg-red-500/20 rounded-2xl text-red-400 hover:text-red-300 transition-all">
+                    <X size={24} />
+                  </button>
+                </div>
               </div>
-            </div>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Taskbar */}
-      <footer className="h-20 glass-panel shrink-0 z-[9000] border-t border-white/10 flex items-center px-6 justify-between relative shadow-[0_-20px_50px_rgba(0,0,0,0.5)]">
+      <footer className="fixed bottom-6 left-1/2 -translate-x-1/2 h-20 glass-panel px-8 rounded-[2.5rem] z-[9000] border border-white/20 flex items-center gap-6 shadow-[0_30px_100px_rgba(0,0,0,0.8)] backdrop-blur-3xl">
         <div className="flex items-center gap-4 h-full">
-          {/* Start Button */}
+          {/* Start Button (Home) */}
           <motion.button 
             whileHover={{ scale: 1.1, rotate: 90 }}
             whileTap={{ scale: 0.9 }}
-            onClick={() => setStartMenuOpen(!startMenuOpen)}
+            onClick={() => {
+              if (windows.some(w => w.isOpen && !w.isMinimized)) {
+                setWindows(prev => prev.map(w => ({ ...w, isMinimized: true })));
+                setStartMenuOpen(false);
+              } else {
+                scrollToPage(1); // Go to home page
+                setStartMenuOpen(!startMenuOpen);
+              }
+            }}
             className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all relative group shadow-2xl ${startMenuOpen ? 'bg-pink-600 text-white' : 'bg-white/5 text-pink-400 hover:bg-white/10'}`}
           >
             <Heart size={32} fill={startMenuOpen ? "white" : "none"} />
@@ -345,26 +563,54 @@ const App: React.FC = () => {
 
           <div className="w-px h-10 bg-white/10 mx-2" />
 
+          {/* Pinned Apps (Mobile Style) */}
+          <div className="flex items-center gap-3 h-full">
+            {[
+              { id: 'gemini', icon: Heart, color: 'bg-gradient-to-br from-indigo-600 to-pink-600' },
+              { id: 'nexus', icon: Share2, color: 'bg-purple-600' },
+              { id: 'towers', icon: Orbit, color: 'bg-gradient-to-br from-cyan-600 to-blue-600' },
+            ].map(app => (
+              <motion.button 
+                key={app.id}
+                whileHover={{ y: -8, scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={() => toggleWindow(app.id as AppId)}
+                className="w-14 h-14 rounded-2xl flex items-center justify-center transition-all relative group shadow-xl bg-white/5 hover:bg-white/10 border border-white/5"
+              >
+                <div className={`${app.color} w-10 h-10 rounded-xl flex items-center justify-center text-white shadow-lg`}>
+                  <app.icon size={22} />
+                </div>
+                {windows.find(w => w.id === app.id && w.isOpen) && (
+                  <motion.div 
+                    layoutId={`dock-indicator-${app.id}`}
+                    className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-pink-500 shadow-[0_0_8px_#ec4899]" 
+                  />
+                )}
+              </motion.button>
+            ))}
+          </div>
+
+          <div className="w-px h-10 bg-white/10 mx-2" />
+
           {/* Active Apps Area */}
-          <div className="flex items-center gap-2 h-full">
-            {windows.filter(w => w.isOpen).map(win => {
+          <div className="flex items-center gap-3 h-full">
+            {windows.filter(w => w.isOpen && !['gemini', 'nexus', 'towers'].includes(w.id)).map(win => {
               const app = APPS_CONFIG[win.id];
               const Icon = app.icon;
               const isActive = !win.isMinimized;
               return (
                 <motion.button 
                   key={win.id}
-                  whileHover={{ backgroundColor: 'rgba(255,255,255,0.08)', y: -2 }}
+                  whileHover={{ backgroundColor: 'rgba(255,255,255,0.08)', y: -4 }}
                   onClick={() => toggleWindow(win.id)}
-                  className={`h-14 px-6 rounded-2xl flex items-center gap-4 transition-all relative group border border-transparent ${isActive ? 'bg-white/10 border-white/10 shadow-xl' : 'hover:border-white/5'}`}
+                  className={`h-14 px-4 rounded-2xl flex items-center gap-3 transition-all relative group border border-transparent ${isActive ? 'bg-white/10 border-white/10 shadow-xl' : 'hover:border-white/5'}`}
                 >
-                  <div className={`${app.color} w-9 h-9 rounded-xl flex items-center justify-center text-white shadow-lg`}>
-                    <Icon size={20} />
+                  <div className={`${app.color} w-10 h-10 rounded-xl flex items-center justify-center text-white shadow-lg`}>
+                    <Icon size={22} />
                   </div>
-                  <span className="text-[12px] font-black text-white/90 uppercase tracking-[0.2em] hidden xl:block">{app.name}</span>
                   <motion.div 
                     layoutId={`taskbar-indicator-${win.id}`}
-                    className={`absolute bottom-1.5 left-1/2 -translate-x-1/2 h-1 rounded-full bg-pink-500 shadow-[0_0_10px_#ec4899] transition-all ${isActive ? 'w-8' : 'w-2 opacity-40'}`} 
+                    className={`absolute -bottom-1 left-1/2 -translate-x-1/2 h-1 rounded-full bg-pink-500 shadow-[0_0_10px_#ec4899] transition-all ${isActive ? 'w-8' : 'w-2 opacity-40'}`} 
                   />
                 </motion.button>
               );
@@ -372,34 +618,27 @@ const App: React.FC = () => {
           </div>
         </div>
 
+        <div className="w-px h-10 bg-white/10 mx-2" />
+
         {/* System Tray */}
-        <div className="flex items-center gap-8 h-full">
-          <div className="hidden lg:flex items-center gap-6 text-white/30">
-            <motion.div whileHover={{ scale: 1.2, color: '#22d3ee' }} className="cursor-pointer"><Wifi size={20} /></motion.div>
-            <motion.div whileHover={{ scale: 1.2, color: '#818cf8' }} className="cursor-pointer"><Volume2 size={20} /></motion.div>
-            <motion.div whileHover={{ scale: 1.2, color: '#34d399' }} className="cursor-pointer"><Battery size={20} /></motion.div>
-          </div>
-
-          <div className="w-px h-10 bg-white/10 mx-2 hidden lg:block" />
-
+        <div className="flex items-center gap-6 h-full">
           <motion.div 
             whileHover={{ backgroundColor: 'rgba(255,255,255,0.05)' }}
             onClick={() => setNexusOpen(!nexusOpen)}
-            className="flex flex-col items-end cursor-pointer px-4 py-2 rounded-2xl transition-all border border-transparent hover:border-white/5"
+            className="flex items-center gap-4 cursor-pointer px-4 py-2 rounded-2xl transition-all border border-transparent hover:border-white/5"
           >
-            <span className="text-lg font-black font-mono tracking-tighter italic text-white">
-              {time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })}
-            </span>
-            <span className="text-[10px] font-black text-pink-400 uppercase tracking-[0.4em] mt-1">
-              {time.toLocaleDateString([], { day: '2-digit', month: '2-digit', year: '2-digit' })}
-            </span>
+            <div className="flex flex-col items-end">
+              <span className="text-lg font-black font-mono tracking-tighter italic text-white leading-none">
+                {time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })}
+              </span>
+              <span className="text-[9px] font-black text-pink-400 uppercase tracking-[0.3em] mt-1">
+                {time.toLocaleDateString([], { day: '2-digit', month: '2-digit' })}
+              </span>
+            </div>
+            <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-white/30">
+              <Bell size={20} />
+            </div>
           </motion.div>
-
-          <div 
-            className="w-1.5 h-full bg-white/5 hover:bg-pink-500/50 transition-colors cursor-pointer rounded-full ml-2" 
-            title="Mostrar Escritorio" 
-            onClick={() => setWindows(prev => prev.map(w => ({ ...w, isMinimized: true })))} 
-          />
         </div>
       </footer>
 

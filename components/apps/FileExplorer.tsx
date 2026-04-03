@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Folder, FileText, ChevronRight, Search, LayoutGrid, List, HardDrive, Clock, Star, Download, Image, Music, Video, Trash2 } from 'lucide-react';
 import { MOCK_FILES } from '../../constants';
-import { cn } from '../../lib/utils';
+import { cn } from '../../src/lib/utils';
 
 const FileExplorer: React.FC = () => {
   const [currentPath, setCurrentPath] = useState(['Este Equipo', 'Disco Local (C:)', 'Usuarios', 'Papa']);

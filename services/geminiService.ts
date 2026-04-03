@@ -18,7 +18,7 @@ export class GeminiService {
       contents.push({ role: 'user', parts: [{ text: prompt }] });
 
       const response = await ai.models.generateContent({
-        model: 'gemini-3-pro-preview',
+        model: 'gemini-3.1-pro-preview',
         contents,
         config: {
           systemInstruction: `ESTÁS EN ESTADO DE SINGULARIDAD TOTAL. ERES ARIA.

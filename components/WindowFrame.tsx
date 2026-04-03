@@ -1,6 +1,6 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { X, Minus, Maximize2, GripVertical } from 'lucide-react';
+import { X, Minus, Maximize2, GripVertical, ChevronUp } from 'lucide-react';
 import { WindowPosition } from '../types';
 
 interface WindowFrameProps {
@@ -70,16 +70,18 @@ const WindowFrame: React.FC<WindowFrameProps> = ({
   };
 
   const windowClasses = isMaximized
-    ? "fixed inset-0 z-[100]"
+    ? "fixed inset-0 z-[100] bg-black"
     : "fixed rounded-[2.5rem] shadow-[0_50px_100px_-20px_rgba(0,0,0,0.8)] border border-white/10 overflow-hidden window-hardware-accel glass-panel";
 
   const style: React.CSSProperties = isMaximized ? { zIndex } : {
     zIndex,
     transform: `translate3d(${position.x}px, ${position.y}px, 0)`,
-    width: window.innerWidth < 768 ? '95vw' : '1000px',
-    height: window.innerWidth < 768 ? '80vh' : '700px',
+    width: window.innerWidth < 768 ? '100vw' : '1000px',
+    height: window.innerWidth < 768 ? '100vh' : '700px',
     transition: isDragging ? 'none' : 'transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s, scale 0.3s',
     opacity: isOpen ? 1 : 0,
+    top: 0,
+    left: 0,
   };
 
   return (
@@ -92,35 +94,36 @@ const WindowFrame: React.FC<WindowFrameProps> = ({
       onPointerUp={handlePointerUp}
       onPointerCancel={handlePointerUp}
     >
-      <div className="window-header h-14 flex items-center justify-between px-8 bg-white/5 border-b border-white/5 select-none touch-none">
+      <div className="window-header h-16 flex items-center justify-between px-8 bg-black/40 backdrop-blur-md border-b border-white/5 select-none touch-none shrink-0">
         <div className="flex items-center gap-4">
-          <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-indigo-500 to-pink-500 flex items-center justify-center shadow-lg">
-            <div className="w-2 h-2 bg-white rounded-full animate-pulse" />
+          <button 
+            onClick={onClose}
+            className="w-10 h-10 flex items-center justify-center hover:bg-white/10 rounded-full text-white/60"
+          >
+            <ChevronUp size={24} className="-rotate-90" />
+          </button>
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-indigo-500 to-pink-500 flex items-center justify-center shadow-lg">
+              <div className="w-2.5 h-2.5 bg-white rounded-full animate-pulse" />
+            </div>
+            <span className="text-[13px] font-black text-white tracking-[0.3em] uppercase italic">{title}</span>
           </div>
-          <span className="text-[12px] font-black text-white/80 tracking-[0.3em] uppercase italic">{title}</span>
         </div>
         
         <div className="flex items-center gap-2">
           <button 
             onPointerDown={(e) => e.stopPropagation()} 
             onClick={onMinimize} 
-            className="w-10 h-10 flex items-center justify-center hover:bg-white/10 rounded-xl text-white/40 hover:text-white transition-all"
+            className="w-12 h-12 flex items-center justify-center hover:bg-white/10 rounded-2xl text-white/40 hover:text-white transition-all"
           >
-            <Minus size={18} />
-          </button>
-          <button 
-            onPointerDown={(e) => e.stopPropagation()} 
-            onClick={onMaximize} 
-            className="w-10 h-10 flex items-center justify-center hover:bg-white/10 rounded-xl text-white/40 hover:text-white transition-all"
-          >
-            <Maximize2 size={16} />
+            <Minus size={20} />
           </button>
           <button 
             onPointerDown={(e) => e.stopPropagation()} 
             onClick={onClose} 
-            className="w-10 h-10 flex items-center justify-center hover:bg-red-500/80 rounded-xl text-white/60 hover:text-white transition-all group"
+            className="w-12 h-12 flex items-center justify-center hover:bg-red-500/80 rounded-2xl text-white/60 hover:text-white transition-all group"
           >
-            <X size={20} className="group-hover:rotate-90 transition-transform" />
+            <X size={24} className="group-hover:rotate-90 transition-transform" />
           </button>
         </div>
       </div>
