@@ -23,6 +23,23 @@ export interface SystemConfig {
   userName: string;
   consciousnessLevel: number;
   neuralLinkActive: boolean;
+  theme: 'light' | 'dark' | 'glass';
+}
+
+export interface SystemStatus {
+  battery: {
+    level: number;
+    isCharging: boolean;
+  };
+  network: {
+    connected: boolean;
+    connectionType: string;
+  };
+  device: {
+    model: string;
+    platform: string;
+    osVersion: string;
+  };
 }
 
 export interface ChatMessage {
