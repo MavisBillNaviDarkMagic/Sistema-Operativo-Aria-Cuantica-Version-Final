@@ -47,3 +47,13 @@ export interface ChatMessage {
   content: string;
   timestamp: Date;
 }
+
+export interface SystemControl {
+  setAccent: (color: string) => void;
+  setUserName: (name: string) => void;
+  setConsciousness: (level: number) => void;
+  openApp: (id: AppId) => void;
+  closeAll: () => void;
+  setTheme: (theme: 'light' | 'dark' | 'glass') => void;
+  setPerformance: (mode: boolean) => void;
+}

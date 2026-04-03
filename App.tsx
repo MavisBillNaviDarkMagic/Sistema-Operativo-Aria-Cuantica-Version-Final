@@ -9,6 +9,7 @@ import SystemMonitor from './components/apps/SystemMonitor';
 import SettingsApp from './components/apps/SettingsApp';
 import AriaEvolution from './components/apps/AriaEvolution';
 import GeminiTowers from './components/apps/GeminiTowers';
+import TerminalApp from './components/apps/TerminalApp';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   Sparkles, Cpu, Zap, BrainCircuit, Share2, 
@@ -28,7 +29,8 @@ const App: React.FC = () => {
     performanceMode: true,
     userName: 'Authorized User',
     consciousnessLevel: 100.00,
-    neuralLinkActive: true
+    neuralLinkActive: true,
+    theme: 'glass'
   });
 
   const [windows, setWindows] = useState<AppWindow[]>([
@@ -87,6 +89,20 @@ const App: React.FC = () => {
     });
   }, [windows.length]);
 
+  const filteredApps = (Object.keys(APPS_CONFIG) as AppId[]).filter(id => 
+    APPS_CONFIG[id].name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const systemControl = {
+    setAccent: (color: string) => setConfig(prev => ({ ...prev, accentColor: color })),
+    setUserName: (name: string) => setConfig(prev => ({ ...prev, userName: name })),
+    setConsciousness: (level: number) => setConfig(prev => ({ ...prev, consciousnessLevel: level })),
+    openApp: (id: AppId) => toggleWindow(id),
+    closeAll: () => setWindows(prev => prev.map(w => ({ ...w, isOpen: false }))),
+    setTheme: (theme: 'light' | 'dark' | 'glass') => setConfig(prev => ({ ...prev, theme })),
+    setPerformance: (mode: boolean) => setConfig(prev => ({ ...prev, performanceMode: mode })),
+  };
+
   const renderAppContent = (id: AppId) => {
     switch (id) {
       case 'gemini': return <AriaApp />;
@@ -95,6 +111,7 @@ const App: React.FC = () => {
       case 'files': return <FileExplorer />;
       case 'monitor': return <SystemMonitor />;
       case 'settings': return <SettingsApp config={config} setConfig={setConfig} />;
+      case 'terminal': return <TerminalApp systemControl={systemControl} />;
       default: return (
         <div className="flex flex-col items-center justify-center h-full text-white/20 italic font-black">
            <Orbit size={100} className="animate-spin-slow mb-6 opacity-10" />
@@ -103,10 +120,6 @@ const App: React.FC = () => {
       );
     }
   };
-
-  const filteredApps = (Object.keys(APPS_CONFIG) as AppId[]).filter(id => 
-    APPS_CONFIG[id].name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
 
   const androidApps = [
     { name: 'WhatsApp', icon: <MessageSquare size={24} />, color: 'bg-green-500' },
@@ -140,7 +153,10 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="h-screen w-screen overflow-hidden flex flex-col relative bg-[#010105] text-slate-100 font-sans select-none">
+    <div 
+      className="h-screen w-screen overflow-hidden flex flex-col relative bg-[#010105] text-slate-100 font-sans select-none"
+      style={{ '--accent-color': config.accentColor } as React.CSSProperties}
+    >
       <div className="neural-grid opacity-10 pointer-events-none" />
       <div className="wallpaper-bg pointer-events-none" />
       
