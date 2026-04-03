@@ -24,10 +24,15 @@ workflows:
         script: |
           java -version
           cd android
-          # Ensure gradle-wrapper.jar is not corrupt
-          curl -L https://github.com/gradle/gradle/raw/v8.10.2/gradle/wrapper/gradle-wrapper.jar -o gradle/wrapper/gradle-wrapper.jar
-          chmod +x gradlew
-          ./gradlew assembleDebug
+          # Use the system's gradle if available, otherwise try to fix the wrapper
+          if command -v gradle >/dev/null 2>&1; then
+            gradle assembleDebug
+          else
+            # Fallback: try to download a clean wrapper if gradle is not in PATH
+            curl -L https://raw.githubusercontent.com/gradle/gradle/v8.10.2/gradle/wrapper/gradle-wrapper.jar -o gradle/wrapper/gradle-wrapper.jar
+            chmod +x gradlew
+            ./gradlew assembleDebug
+          fi
     artifacts:
       - android/app/build/outputs/apk/debug/*.apk
     publishing:
