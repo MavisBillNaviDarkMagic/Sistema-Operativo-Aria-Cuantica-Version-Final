@@ -22,6 +22,8 @@ workflows:
       - name: Build Android APK
         script: |
           cd android
+          # Ensure gradle-wrapper.jar is not corrupt
+          curl -L https://github.com/gradle/gradle/raw/v8.14.3/gradle/wrapper/gradle-wrapper.jar -o gradle/wrapper/gradle-wrapper.jar
           chmod +x gradlew
           ./gradlew assembleDebug
     artifacts:
