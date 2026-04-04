@@ -1,6 +1,6 @@
 {
-  "name": "Aurora OS: Aria Core",
-  "description": "The definitive fusion of a futuristic OS and Aria Intelligence. Aria coordinates everything from kernel to user interface, ensuring a secure and optimized environment.",
+  "name": "Aria Launcher: System Fusion",
+  "description": "Un potente sistema launcher diseñado para fusionarse con el núcleo nativo de tu dispositivo, inyectando la inteligencia de Aria y la potencia de Ubuntu en cada proceso.",
   "requestFramePermissions": [
     "camera",
     "microphone",

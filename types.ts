@@ -1,5 +1,5 @@
 
-export type AppId = 'gemini' | 'files' | 'settings' | 'monitor' | 'browser' | 'terminal' | 'evolution' | 'nexus' | 'towers';
+export type AppId = 'gemini' | 'files' | 'settings' | 'monitor' | 'browser' | 'terminal' | 'evolution' | 'nexus' | 'towers' | 'bridge';
 
 export interface WindowPosition {
   x: number;
@@ -23,6 +23,9 @@ export interface SystemConfig {
   userName: string;
   consciousnessLevel: number;
   neuralLinkActive: boolean;
+  isSystemInjected: boolean;
+  distro: 'ubuntu' | 'aria-core';
+  osType: 'linux' | 'aria';
   theme: 'light' | 'dark' | 'glass';
 }
 
@@ -54,6 +57,7 @@ export interface SystemControl {
   setConsciousness: (level: number) => void;
   openApp: (id: AppId) => void;
   closeAll: () => void;
+  setSystemInjected: (injected: boolean) => void;
   setTheme: (theme: 'light' | 'dark' | 'glass') => void;
   setPerformance: (mode: boolean) => void;
 }

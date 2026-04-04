@@ -1,11 +1,13 @@
 
 import React, { useState, useEffect } from 'react';
-import { Dna, Zap, Brain, ShieldCheck, TrendingUp, Cpu, Orbit, Sparkles, Heart, Activity, Database, Globe, Lock } from 'lucide-react';
+import { Dna, Zap, Brain, ShieldCheck, TrendingUp, Cpu, Orbit, Sparkles, Heart, Activity, Database, Globe, Lock, Smartphone, Monitor, LayoutGrid, Terminal, Folder, BrainCircuit } from 'lucide-react';
 import { motion } from 'motion/react';
 import { cn } from '../../src/lib/utils';
+import { systemService } from '../../services/systemService';
 
 const AriaEvolution: React.FC = () => {
   const [evolutionLevel, setEvolutionLevel] = useState(99.9);
+  const [isNative, setIsNative] = useState(false);
   const [metrics, setMetrics] = useState({
     cpu: 12,
     ram: 45,
@@ -15,6 +17,7 @@ const AriaEvolution: React.FC = () => {
   });
 
   useEffect(() => {
+    systemService.isNative().then(setIsNative);
     const interval = setInterval(() => {
       setMetrics({
         cpu: Math.floor(Math.random() * 20) + 5,
@@ -26,6 +29,12 @@ const AriaEvolution: React.FC = () => {
     }, 3000);
     return () => clearInterval(interval);
   }, []);
+
+  const testFusion = async () => {
+    await systemService.vibrate();
+    await systemService.setStatusBarColor('#E95420');
+    alert('Prueba de Fusión: El hardware ha respondido con una vibración y cambio de color en la barra de estado nativa.');
+  };
 
   return (
     <div className="flex flex-col h-full bg-[#010105] text-slate-100 font-sans overflow-y-auto custom-scrollbar">
@@ -104,6 +113,70 @@ const AriaEvolution: React.FC = () => {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+
+        {/* Fusion Capabilities Dashboard */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+          <div className="glass-panel p-10 rounded-[4rem] border border-white/10 shadow-2xl bg-gradient-to-br from-indigo-500/5 to-purple-500/5">
+            <div className="flex items-center justify-between mb-8">
+              <h3 className="text-xl font-black italic tracking-tighter uppercase text-white flex items-center gap-4">
+                <Smartphone size={24} className="text-blue-400" />
+                Funciones Nativas (Reales)
+              </h3>
+              <div className={cn("px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest", isNative ? "bg-emerald-500/20 text-emerald-400" : "bg-amber-500/20 text-amber-400")}>
+                {isNative ? "Fusión Activa" : "Modo Simulación"}
+              </div>
+            </div>
+            <div className="space-y-4">
+              {[
+                { label: 'Control de Vibración (Hápticos)', status: isNative ? 'Funcional' : 'Simulado', icon: <Activity size={14} /> },
+                { label: 'Acceso a Batería y Red', status: isNative ? 'Funcional' : 'Simulado', icon: <Zap size={14} /> },
+                { label: 'Barra de Estado Nativa', status: isNative ? 'Funcional' : 'Simulado', icon: <Monitor size={14} /> },
+                { label: 'Minimización de App', status: isNative ? 'Funcional' : 'Simulado', icon: <Smartphone size={14} /> },
+              ].map((item, i) => (
+                <div key={i} className="flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/5">
+                  <div className="flex items-center gap-3">
+                    <span className="text-blue-400">{item.icon}</span>
+                    <span className="text-xs font-bold text-white/80">{item.label}</span>
+                  </div>
+                  <span className={cn("text-[9px] font-black uppercase tracking-widest", item.status === 'Funcional' ? "text-emerald-400" : "text-amber-400")}>
+                    {item.status}
+                  </span>
+                </div>
+              ))}
+              <button 
+                onClick={testFusion}
+                className="w-full mt-4 py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-2xl font-black uppercase tracking-widest text-xs transition-all shadow-lg active:scale-95"
+              >
+                Probar Fusión de Hardware
+              </button>
+            </div>
+          </div>
+
+          <div className="glass-panel p-10 rounded-[4rem] border border-white/5 shadow-2xl">
+            <h3 className="text-xl font-black italic tracking-tighter uppercase text-white mb-8 flex items-center gap-4">
+              <Monitor size={24} className="text-purple-400" />
+              Funciones de Interfaz (Aria OS)
+            </h3>
+            <div className="space-y-4">
+              {[
+                { label: 'Gestión de Ventanas Aria', status: 'Funcional', icon: <LayoutGrid size={14} /> },
+                { label: 'Terminal de Comandos', status: 'Funcional', icon: <Terminal size={14} /> },
+                { label: 'Explorador de Archivos', status: 'Funcional', icon: <Folder size={14} /> },
+                { label: 'IA Generativa (Aria)', status: 'Funcional', icon: <BrainCircuit size={14} /> },
+              ].map((item, i) => (
+                <div key={i} className="flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/5">
+                  <div className="flex items-center gap-3">
+                    <span className="text-purple-400">{item.icon}</span>
+                    <span className="text-xs font-bold text-white/80">{item.label}</span>
+                  </div>
+                  <span className="text-[9px] font-black uppercase tracking-widest text-emerald-400">
+                    {item.status}
+                  </span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 

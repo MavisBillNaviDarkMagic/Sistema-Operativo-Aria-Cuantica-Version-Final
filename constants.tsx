@@ -75,6 +75,12 @@ export const APPS_CONFIG: Record<AppId, {
     icon: Orbit,
     color: 'bg-gradient-to-br from-cyan-600 to-blue-600',
     description: 'Sincronización con las torres de procesamiento Gemini.'
+  },
+  bridge: {
+    name: 'System Bridge',
+    icon: Zap,
+    color: 'bg-gradient-to-br from-yellow-500 to-orange-600',
+    description: 'Inyector de Aria en la matriz del sistema.'
   }
 };
 

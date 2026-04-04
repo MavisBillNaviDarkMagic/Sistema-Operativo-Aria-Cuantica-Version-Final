@@ -1,12 +1,15 @@
 
 import React, { useEffect, useState } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { Activity, Cpu, Database, Zap, Sparkles, Orbit, ShieldCheck } from 'lucide-react';
+import { Activity, Cpu, Database, Zap, Sparkles, Orbit, ShieldCheck, Smartphone } from 'lucide-react';
+import { systemService } from '../../services/systemService';
+import { SystemStatus } from '../../types';
 
 const SystemMonitor: React.FC = () => {
   const [metrics, setMetrics] = useState<any[]>([]);
   const [isSanitizing, setIsSanitizing] = useState(false);
   const [sanitizeProgress, setSanitizeProgress] = useState(0);
+  const [status, setStatus] = useState<SystemStatus | null>(null);
 
   const handleSanitize = () => {
     setIsSanitizing(true);
@@ -24,6 +27,8 @@ const SystemMonitor: React.FC = () => {
   };
 
   useEffect(() => {
+    systemService.getStatus().then(setStatus);
+    
     const interval = setInterval(() => {
       setMetrics(prev => {
         const newVal = {
@@ -115,11 +120,16 @@ const SystemMonitor: React.FC = () => {
         </div>
         <div className="liquid-glass p-6 rounded-2xl border-white/5 flex items-center gap-6">
            <div className="w-12 h-12 rounded-full bg-cyan-500/10 flex items-center justify-center text-cyan-400">
-             <Cpu size={24} />
+             <Smartphone size={24} />
            </div>
            <div>
              <p className="text-[10px] font-bold text-white/30 uppercase tracking-widest">Hardware Link</p>
-             <p className="text-lg font-black text-white">TRANSCENDENT</p>
+             <p className="text-lg font-black text-white truncate max-w-[150px]">
+               {status?.device.model || 'TRANSCENDENT'}
+             </p>
+             <p className="text-[9px] text-cyan-400/60 font-bold uppercase tracking-widest">
+               {status?.device.platform} {status?.device.osVersion}
+             </p>
            </div>
         </div>
       </div>

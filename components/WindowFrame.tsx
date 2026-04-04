@@ -94,36 +94,35 @@ const WindowFrame: React.FC<WindowFrameProps> = ({
       onPointerUp={handlePointerUp}
       onPointerCancel={handlePointerUp}
     >
-      <div className="window-header h-16 flex items-center justify-between px-8 bg-black/40 backdrop-blur-md border-b border-white/5 select-none touch-none shrink-0">
-        <div className="flex items-center gap-4">
-          <button 
-            onClick={onClose}
-            className="w-10 h-10 flex items-center justify-center hover:bg-white/10 rounded-full text-white/60"
-          >
-            <ChevronUp size={24} className="-rotate-90" />
-          </button>
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-indigo-500 to-pink-500 flex items-center justify-center shadow-lg">
-              <div className="w-2.5 h-2.5 bg-white rounded-full animate-pulse" />
-            </div>
-            <span className="text-[13px] font-black text-white tracking-[0.3em] uppercase italic">{title}</span>
+      <div className="window-header h-12 flex items-center justify-between px-4 bg-[#3d3d3d] border-b border-black/20 select-none touch-none shrink-0">
+        <div className="flex items-center gap-3">
+          <div className="w-6 h-6 rounded-md bg-[#E95420] flex items-center justify-center shadow-lg">
+            <div className="w-1.5 h-1.5 bg-white rounded-full" />
           </div>
+          <span className="text-xs font-bold text-[#f7f7f7] tracking-wider uppercase">{title}</span>
         </div>
         
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1">
           <button 
             onPointerDown={(e) => e.stopPropagation()} 
             onClick={onMinimize} 
-            className="w-12 h-12 flex items-center justify-center hover:bg-white/10 rounded-2xl text-white/40 hover:text-white transition-all"
+            className="w-8 h-8 flex items-center justify-center hover:bg-white/10 rounded-full text-white/60 transition-all"
           >
-            <Minus size={20} />
+            <Minus size={14} />
+          </button>
+          <button 
+            onPointerDown={(e) => e.stopPropagation()} 
+            onClick={onMaximize} 
+            className="w-8 h-8 flex items-center justify-center hover:bg-white/10 rounded-full text-white/60 transition-all"
+          >
+            <Maximize2 size={14} />
           </button>
           <button 
             onPointerDown={(e) => e.stopPropagation()} 
             onClick={onClose} 
-            className="w-12 h-12 flex items-center justify-center hover:bg-red-500/80 rounded-2xl text-white/60 hover:text-white transition-all group"
+            className="w-8 h-8 flex items-center justify-center bg-[#c7162b] hover:bg-[#e01b31] rounded-full text-white transition-all shadow-inner"
           >
-            <X size={24} className="group-hover:rotate-90 transition-transform" />
+            <X size={14} />
           </button>
         </div>
       </div>
